@@ -30,10 +30,15 @@ const Form = ({onSubmit, newName, setNewName, newNumber, setNewNumber}) => {
     )
 }
 
+const Filter = ({search, setSearch}) => {
+    return <div> Filter <input value={search} onChange={(e) => setSearch(e.target.value)}/> </div>
+}
+
 const App = () => {
     const [persons, setPersons] = useState([{name: 'Arto Hellas', number: '000-000-0000'}])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
+    const [search, setSearch] = useState('')
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -53,11 +58,19 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Filter search={search} setSearch={setSearch}/>
+            <br/>
             <Form onSubmit={handleSubmit}
                   newName={newName} setNewName={setNewName}
                   newNumber={newNumber} setNewNumber={setNewNumber}
             />
-            <Persons persons={persons}/>
+            {
+                //If there's data in the filter input field, render the matches, if any, else render the entire phonebook
+                search.length > 0 ?
+                <Persons persons={persons.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))}/>
+                :
+                <Persons persons={persons}/>
+            }
         </div>
     )
 }

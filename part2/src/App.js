@@ -2,12 +2,19 @@ import {useState, useEffect} from 'react'
 import {nanoid} from "nanoid";
 import personService from "./services/personService";
 
-const Persons = ({persons}) => {
+const Persons = ({persons, onClick}) => {
     return (
         <>
             <h2>Numbers</h2>
             <ul>
-                {persons.map((p) => <li key={nanoid()}>{p.name} {p.number}</li>)}
+                {
+                    persons.map((p) =>
+                        <li key={p.id}>{p.name} {p.number}
+                        &nbsp;
+                        <button onClick={onClick} value={p.id}>delete</button>
+                        </li>
+                    )
+                }
             </ul>
         </>
     )
@@ -49,11 +56,27 @@ const App = () => {
             if (persons.find(e => e.name.toLowerCase() === name.toLowerCase())) {
                 alert(`${name} is already added to the phonebook`)
             } else {
-                setPersons(persons.concat({name: name, number: newNumber}))
-                setNewName('')
-                setNewNumber('')
+                let new_entry = {id: nanoid(), name: name, number: newNumber}
+                personService.create(new_entry).then(data => {
+                    setPersons(persons.concat(data))
+                    setNewName('')
+                    setNewNumber('')
+                })
             }
         }
+    }
+
+    const handleDelete = (e) => {
+        e.preventDefault()
+        let id = e.target.value
+        personService.remove(id).then(response => {
+            if (response.status === 200) {
+                setPersons(persons.filter(p => p.id !== id))
+            } else {
+                alert("Error Deleting Entry From Phonebook! Check console")
+                console.log(response)
+            }
+        })
     }
 
     //hook to *initially* render the phonebook contents from the db.json file
@@ -76,9 +99,12 @@ const App = () => {
             {
                 //If there's data in the filter input field, render the matches, if any, else render the entire phonebook
                 search.length > 0 ?
-                <Persons persons={persons.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))}/>
+                <Persons
+                    persons={persons.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))}
+                    onClick={handleDelete}
+                />
                 :
-                <Persons persons={persons}/>
+                <Persons persons={persons} onClick={handleDelete}/>
             }
         </div>
     )

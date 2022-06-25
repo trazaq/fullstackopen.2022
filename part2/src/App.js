@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react'
 import {nanoid} from "nanoid";
 import personService from "./services/personService";
+import './index.css';
 
 const Persons = ({persons, onClick}) => {
     return (
@@ -10,8 +11,8 @@ const Persons = ({persons, onClick}) => {
                 {
                     persons.map((p) =>
                         <li key={p.id}>{p.name} {p.number}
-                        &nbsp;
-                        <button onClick={onClick} value={p.id}>delete</button>
+                            &nbsp;
+                            <button onClick={onClick} value={p.id}>delete</button>
                         </li>
                     )
                 }
@@ -39,7 +40,18 @@ const Form = ({onSubmit, newName, setNewName, newNumber, setNewNumber}) => {
 }
 
 const Filter = ({search, setSearch}) => {
-    return <div> Filter <input value={search} onChange={(e) => setSearch(e.target.value)}/> </div>
+    return <div> Filter <input value={search} onChange={(e) => setSearch(e.target.value)}/></div>
+}
+
+const Notification = ({message}) => {
+    if (message === null) {
+        return null
+    }
+    return (
+        <div className='message'>
+            {message}
+        </div>
+    )
 }
 
 const App = () => {
@@ -47,6 +59,7 @@ const App = () => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [search, setSearch] = useState('')
+    const [notificationMsg, setNotificationMsg] = useState(null)
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -57,10 +70,14 @@ const App = () => {
                 alert(`${name} is already added to the phonebook`)
             } else {
                 let new_entry = {id: nanoid(), name: name, number: newNumber}
-                personService.create(new_entry).then(data => {
-                    setPersons(persons.concat(data))
+                personService.create(new_entry).then(() => {
+                    setPersons(persons.concat(new_entry))
                     setNewName('')
                     setNewNumber('')
+                    setNotificationMsg(`${new_entry.name} Added to Phonebook`)
+                    setTimeout(() => {
+                        setNotificationMsg(null)
+                    }, 2500)
                 })
             }
         }
@@ -72,6 +89,10 @@ const App = () => {
         personService.remove(id).then(response => {
             if (response.status === 200) {
                 setPersons(persons.filter(p => p.id !== id))
+                setNotificationMsg("Deleted!")
+                setTimeout(() => {
+                    setNotificationMsg(null)
+                }, 2000)
             } else {
                 alert("Error Deleting Entry From Phonebook! Check console")
                 console.log(response)
@@ -90,6 +111,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification message={notificationMsg}/>
             <Filter search={search} setSearch={setSearch}/>
             <br/>
             <Form onSubmit={handleSubmit}
@@ -99,12 +121,12 @@ const App = () => {
             {
                 //If there's data in the filter input field, render the matches, if any, else render the entire phonebook
                 search.length > 0 ?
-                <Persons
-                    persons={persons.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))}
-                    onClick={handleDelete}
-                />
-                :
-                <Persons persons={persons} onClick={handleDelete}/>
+                    <Persons
+                        persons={persons.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))}
+                        onClick={handleDelete}
+                    />
+                    :
+                    <Persons persons={persons} onClick={handleDelete}/>
             }
         </div>
     )

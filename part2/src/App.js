@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 import {nanoid} from "nanoid";
-import axios from "axios";
+import personService from "./services/personService";
 
 const Persons = ({persons}) => {
     return (
@@ -59,11 +59,9 @@ const App = () => {
     //hook to *initially* render the phonebook contents from the db.json file
     //Need to make sure the json-server is running
     useEffect(() => {
-        axios
-            .get('http://localhost:3001/persons')
-            .then(response => {
-                setPersons(persons.concat(response.data))
-            })
+        personService.getAll().then(data => {
+            setPersons(persons.concat(data))
+        })
     }, [])
 
     return (

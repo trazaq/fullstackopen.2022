@@ -101,10 +101,11 @@ const App = () => {
     }
 
     //hook to *initially* render the phonebook contents from the db.json file
-    //Need to make sure the json-server is running
+    //Need to make sure the Express Server is running
     useEffect(() => {
         personService.getAll().then(data => {
-            setPersons(persons.concat(data))
+            data = JSON.parse(data)
+            setPersons(persons.concat(data.persons))
         })
     }, [])
 

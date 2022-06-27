@@ -32,4 +32,24 @@ router.post('/', function (req, res, next) {
     });
 });
 
+router.delete('/:id', function (req, res, next) {
+    fs.readFile('./db.json', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.sendStatus(500).end();
+        }
+        let id = req.params.id
+        let initial = JSON.parse(data);
+        initial.persons = initial.persons.filter(p => p.id !== id)
+        fs.writeFile('./db.json', JSON.stringify(initial), (err) => {
+            if (err) {
+                console.log(err);
+                throw err
+            }
+            //console.log('update saved!')
+            res.sendStatus(200).end();
+        })
+    });
+});
+
 module.exports = router;

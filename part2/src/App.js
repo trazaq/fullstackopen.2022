@@ -1,5 +1,8 @@
 import {useState, useEffect} from 'react'
 import {nanoid} from "nanoid";
+import CssBaseline from '@mui/material/CssBaseline';
+import AppBar from './AppBar';
+import {ThemeProvider, createTheme} from '@mui/material/styles';
 import personService from "./services/personService";
 import './index.css';
 
@@ -61,6 +64,12 @@ const App = () => {
     const [search, setSearch] = useState('')
     const [notificationMsg, setNotificationMsg] = useState(null)
 
+    const darkTheme = createTheme({
+        palette: {
+            mode: 'dark',
+        },
+    });
+
     const handleSubmit = (e) => {
         e.preventDefault()
         let name = newName.trim();
@@ -111,6 +120,10 @@ const App = () => {
 
     return (
         <div>
+            <ThemeProvider theme={darkTheme}>
+                <CssBaseline/>
+                <AppBar/>
+            </ThemeProvider>
             <h2>Phonebook</h2>
             <Notification message={notificationMsg}/>
             <Filter search={search} setSearch={setSearch}/>

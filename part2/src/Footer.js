@@ -12,7 +12,6 @@ export default function SimpleBottomNavigation() {
     const [value, setValue] = React.useState(0);
 
     return (
-        <Box sx={{position: 'relative', bottom: 0, left: 0, right: 0}}>
             <BottomNavigation
                 showLabels
                 value={value}
@@ -23,6 +22,5 @@ export default function SimpleBottomNavigation() {
                 <BottomNavigationAction label="Restore Page" icon={<RestorePage/>}/>
                 <BottomNavigationAction label="LinkedIn" icon={<LinkedInIcon/>}/>
             </BottomNavigation>
-        </Box>
     );
 }

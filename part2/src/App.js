@@ -1,10 +1,14 @@
 import {useState, useEffect} from 'react'
 import {nanoid} from "nanoid";
 import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
+import Footer from './Footer';
 import AppBar from './AppBar';
 import {ThemeProvider, createTheme} from '@mui/material/styles';
 import personService from "./services/personService";
 import './index.css';
+import {randPhoneNumber, randFullName} from "@ngneat/falso";
+import {Grid} from "@mui/material";
 
 const Persons = ({persons, onClick}) => {
     return (
@@ -42,9 +46,6 @@ const Form = ({onSubmit, newName, setNewName, newNumber, setNewNumber}) => {
     )
 }
 
-const Filter = ({search, setSearch}) => {
-    return <div> Filter <input value={search} onChange={(e) => setSearch(e.target.value)}/></div>
-}
 
 const Notification = ({message}) => {
     if (message === null) {
@@ -64,9 +65,16 @@ const App = () => {
     const [search, setSearch] = useState('')
     const [notificationMsg, setNotificationMsg] = useState(null)
 
-    const darkTheme = createTheme({
+    const theme = createTheme({
         palette: {
             mode: 'dark',
+        },
+        components: {
+            MuiCssBaseline: {
+                styleOverrides: {
+                    body: {'backgroundColor': 'rgb(42, 42, 42)'},
+                },
+            },
         },
     });
 
@@ -112,36 +120,51 @@ const App = () => {
     //hook to *initially* render the phonebook contents from the db.json file
     //Need to make sure the Express Server is running
     useEffect(() => {
-        personService.getAll().then(data => {
+        /*personService.getAll().then(data => {
             data = JSON.parse(data)
             setPersons(persons.concat(data.persons))
-        })
+        })*/
+        let data = []
+        for (let i = 20; i < 20; i++) {
+            data.push({id: nanoid(), name: randFullName(), number: randPhoneNumber()});
+        }
+        setPersons(persons.concat(data))
     }, [])
 
     return (
         <div>
-            <ThemeProvider theme={darkTheme}>
-                <CssBaseline/>
-                <AppBar/>
+            <ThemeProvider theme={theme}>
+                <CssBaseline enableColorScheme={true}/>
+                <AppBar search={search} setSearch={setSearch}/>
+                <Grid
+                    container
+                    minHeight={'100vh'}
+                    direction="column"
+                    justifyContent="space-between"
+                    alignItems="stretch"
+                >
+                    <Container maxWidth="false" disableGutters={false}>
+                        <h2>Phonebook</h2>
+                        <Notification message={notificationMsg}/>
+                        <br/>
+                        <Form onSubmit={handleSubmit}
+                              newName={newName} setNewName={setNewName}
+                              newNumber={newNumber} setNewNumber={setNewNumber}
+                        />
+                        {
+                            //If there's data in the filter input field, render the matches, if any, else render the entire phonebook
+                            search.length > 0 ?
+                                <Persons
+                                    persons={persons.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))}
+                                    onClick={handleDelete}
+                                />
+                                :
+                                <Persons persons={persons} onClick={handleDelete}/>
+                        }
+                    </Container>
+                    <Footer/>
+                </Grid>
             </ThemeProvider>
-            <h2>Phonebook</h2>
-            <Notification message={notificationMsg}/>
-            <Filter search={search} setSearch={setSearch}/>
-            <br/>
-            <Form onSubmit={handleSubmit}
-                  newName={newName} setNewName={setNewName}
-                  newNumber={newNumber} setNewNumber={setNewNumber}
-            />
-            {
-                //If there's data in the filter input field, render the matches, if any, else render the entire phonebook
-                search.length > 0 ?
-                    <Persons
-                        persons={persons.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))}
-                        onClick={handleDelete}
-                    />
-                    :
-                    <Persons persons={persons} onClick={handleDelete}/>
-            }
         </div>
     )
 }

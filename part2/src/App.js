@@ -8,24 +8,67 @@ import {ThemeProvider, createTheme} from '@mui/material/styles';
 import personService from "./services/personService";
 import './index.css';
 import {randPhoneNumber, randFullName} from "@ngneat/falso";
-import {Grid} from "@mui/material";
+import {
+    Chip,
+    Grid,
+    Paper, styled,
+    Table,
+    TableBody,
+    TableCell,
+    tableCellClasses,
+    TableContainer,
+    TableHead,
+    TableRow
+} from "@mui/material";
 import Box from "@mui/material/Box";
 
 const Persons = ({persons, onClick}) => {
+    const StyledTableCell = styled(TableCell)(({ theme }) => ({
+        [`&.${tableCellClasses.head}`]: {
+            backgroundColor: theme.palette.common.black,
+            color: theme.palette.common.white,
+        },
+        [`&.${tableCellClasses.body}`]: {
+            fontSize: 14,
+        },
+    }));
+    const StyledTableRow = styled(TableRow)(({ theme }) => ({
+        '&:nth-of-type(odd)': {
+            backgroundColor: theme.palette.action.hover,
+        },
+        // hide last border
+        '&:last-child td, &:last-child th': {
+            border: 0,
+        },
+    }));
     return (
-        <>
-            <h2>Numbers</h2>
-            <ul>
-                {
-                    persons.map((p) =>
-                        <li key={p.id}>{p.name} {p.number}
-                            &nbsp;
-                            <button onClick={onClick} value={p.id}>delete</button>
-                        </li>
-                    )
-                }
-            </ul>
-        </>
+        <TableContainer component={Paper}>
+            <Table sx={{minWidth: 650}} aria-label="simple table">
+                <TableHead>
+                    <StyledTableRow>
+                        <StyledTableCell>Name</StyledTableCell>
+                        <StyledTableCell align="right">Number</StyledTableCell>
+                        <StyledTableCell align="right">Delete?</StyledTableCell>
+                    </StyledTableRow>
+                </TableHead>
+                <TableBody>
+                    {persons.map((person) => (
+                        <StyledTableRow
+                            key={person.id}
+                            sx={{'&:last-child td, &:last-child th': {border: 0}}}
+                        >
+                            <StyledTableCell component="th" scope="row">
+                                {person.name}
+                            </StyledTableCell>
+                            <StyledTableCell align="right">{person.number}</StyledTableCell>
+                            <StyledTableCell align="right">
+                                <Chip label="Delete" variant="outlined" onDelete={onClick} />
+                            </StyledTableCell>
+                        </StyledTableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
     )
 }
 

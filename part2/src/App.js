@@ -21,9 +21,11 @@ import {
     TableRow
 } from "@mui/material";
 import Box from "@mui/material/Box";
+import Input from './Input';
+import PersonList from './PersonList'
 
 const Persons = ({persons, onClick}) => {
-    const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    const StyledTableCell = styled(TableCell)(({theme}) => ({
         [`&.${tableCellClasses.head}`]: {
             backgroundColor: theme.palette.common.black,
             color: theme.palette.common.white,
@@ -32,7 +34,7 @@ const Persons = ({persons, onClick}) => {
             fontSize: 14,
         },
     }));
-    const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    const StyledTableRow = styled(TableRow)(({theme}) => ({
         '&:nth-of-type(odd)': {
             backgroundColor: theme.palette.action.hover,
         },
@@ -62,7 +64,7 @@ const Persons = ({persons, onClick}) => {
                             </StyledTableCell>
                             <StyledTableCell align="right">{person.number}</StyledTableCell>
                             <StyledTableCell align="right">
-                                <Chip label="Delete" variant="outlined" onDelete={onClick} />
+                                <Chip label="Delete" variant="outlined" onDelete={onClick}/>
                             </StyledTableCell>
                         </StyledTableRow>
                     ))}
@@ -76,15 +78,15 @@ const Form = ({onSubmit, newName, setNewName, newNumber, setNewNumber}) => {
     return (
         <form onSubmit={onSubmit}>
             <div>
-                name: <input onChange={(e) => setNewName(e.target.value)} value={newName}/>
+                Name: <Input placeholder={'Name'} onChange={(e) => setNewName(e.target.value)} value={newName}/>
             </div>
             <div>
                 <br/>
-                number: <input onChange={(e) => setNewNumber(e.target.value)} value={newNumber}/>
+                Number: <Input placeholder={'Number'} onChange={(e) => setNewNumber(e.target.value)} value={newNumber}/>
             </div>
             <div>
                 <br/>
-                <button type="submit">add</button>
+                <button type="submit">Add</button>
             </div>
         </form>
     )
@@ -150,7 +152,7 @@ const App = () => {
 
     const handleDelete = (e) => {
         e.preventDefault()
-        let id = e.target.value
+        let id = e.currentTarget.value
         personService.remove(id).then(response => {
             if (response.status === 200) {
                 setPersons(persons.filter(p => p.id !== id))
@@ -159,9 +161,10 @@ const App = () => {
                     setNotificationMsg(null)
                 }, 2000)
             } else {
-                alert("Error Deleting Entry From Phonebook! Check console")
                 console.log(response)
             }
+        }).catch((response) => {
+            console.log(response)
         })
     }
 
@@ -214,12 +217,14 @@ const App = () => {
                                         {
                                             //If there's data in the filter input field, render the matches, if any, else render the entire phonebook
                                             search.length > 0 ?
-                                                <Persons
+                                                <PersonList
                                                     persons={persons.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))}
                                                     onClick={handleDelete}
                                                 />
                                                 :
-                                                <Persons persons={persons} onClick={handleDelete}/>
+                                                <PersonList
+                                                    persons={persons} onClick={handleDelete}
+                                                />
                                         }
                                     </Box>
                                 </Container>

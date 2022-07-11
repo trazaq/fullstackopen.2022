@@ -7,7 +7,7 @@ import AppBar from './AppBar';
 import {ThemeProvider, createTheme} from '@mui/material/styles';
 import personService from "./services/personService";
 import './index.css';
-import {randPhoneNumber, randFullName} from "@ngneat/falso";
+//import {randPhoneNumber, randFullName} from "@ngneat/falso";
 import {
     Chip,
     Grid,
@@ -171,15 +171,15 @@ const App = () => {
     //hook to *initially* render the phonebook contents from the db.json file
     //Need to make sure the Express Server is running
     useEffect(() => {
-        /*personService.getAll().then(data => {
-            data = JSON.parse(data)
-            setPersons(persons.concat(data.persons))
-        })*/
-        let data = []
+        personService.getAll().then(data => {
+            console.log(data)
+            setPersons(persons.concat(data))
+        })
+       /* let data = []
         for (let i = 0; i < 200; i++) {
             data.push({id: nanoid(), name: randFullName(), number: randPhoneNumber()});
         }
-        setPersons(persons.concat(data))
+        setPersons(persons.concat(data))*/
     }, [])
 
     useEffect(() => {

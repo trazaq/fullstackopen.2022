@@ -45,7 +45,7 @@ export default function InteractiveList({persons, onClick}) {
                                 />
                                 <ListItemText
                                     sx={{textAlign: 'center'}}
-                                    primary={person.number}
+                                    primary={person.phone}
                                 />
                             </ListItem>
                         })

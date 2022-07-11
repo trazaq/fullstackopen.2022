@@ -172,7 +172,6 @@ const App = () => {
     //Need to make sure the Express Server is running
     useEffect(() => {
         personService.getAll().then(data => {
-            console.log(data)
             setPersons(persons.concat(data))
         })
        /* let data = []

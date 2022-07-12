@@ -9,6 +9,7 @@ import personService from "./services/personService";
 import './index.css';
 //import {randPhoneNumber, randFullName} from "@ngneat/falso";
 import {
+    Button,
     Chip,
     Grid,
     Paper, styled,
@@ -77,17 +78,11 @@ const Persons = ({persons, onClick}) => {
 const Form = ({onSubmit, newName, setNewName, newNumber, setNewNumber}) => {
     return (
         <form onSubmit={onSubmit}>
-            <div>
-                Name: <Input placeholder={'Name'} onChange={(e) => setNewName(e.target.value)} value={newName}/>
-            </div>
-            <div>
-                <br/>
-                Number: <Input placeholder={'Number'} onChange={(e) => setNewNumber(e.target.value)} value={newNumber}/>
-            </div>
-            <div>
-                <br/>
-                <button type="submit">Add</button>
-            </div>
+            Name: <Input placeholder={'Name'} onChange={(e) => setNewName(e.target.value)} value={newName}/>
+            <br/>
+            Number: <Input placeholder={'Number'} onChange={(e) => setNewNumber(e.target.value)} value={newNumber}/>
+            <br/>
+            <Button type="submit" variant={'outlined'}>Add</Button>
         </form>
     )
 }
@@ -174,11 +169,11 @@ const App = () => {
         personService.getAll().then(data => {
             setPersons(persons.concat(data))
         })
-       /* let data = []
-        for (let i = 0; i < 200; i++) {
-            data.push({id: nanoid(), name: randFullName(), number: randPhoneNumber()});
-        }
-        setPersons(persons.concat(data))*/
+        /* let data = []
+         for (let i = 0; i < 200; i++) {
+             data.push({id: nanoid(), name: randFullName(), number: randPhoneNumber()});
+         }
+         setPersons(persons.concat(data))*/
     }, [])
 
     useEffect(() => {

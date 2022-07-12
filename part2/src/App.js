@@ -131,7 +131,7 @@ const App = () => {
             if (persons.find(e => e.name.toLowerCase() === name.toLowerCase())) {
                 alert(`${name} is already added to the phonebook`)
             } else {
-                let new_entry = {id: nanoid(), name: name, number: newNumber}
+                let new_entry = {id: nanoid(), name: name, phone: newNumber}
                 personService.create(new_entry).then(() => {
                     setPersons(persons.concat(new_entry))
                     setNewName('')

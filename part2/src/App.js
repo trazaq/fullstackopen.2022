@@ -23,9 +23,10 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Input from './Input';
-import PersonList from './PersonList'
+import PersonList from './PersonList';
+//import Form from './Form';
 
-const Persons = ({persons, onClick}) => {
+/*const Persons = ({persons, onClick}) => {
     const StyledTableCell = styled(TableCell)(({theme}) => ({
         [`&.${tableCellClasses.head}`]: {
             backgroundColor: theme.palette.common.black,
@@ -73,20 +74,51 @@ const Persons = ({persons, onClick}) => {
             </Table>
         </TableContainer>
     )
-}
+}*/
 
-const Form = ({onSubmit, newName, setNewName, newNumber, setNewNumber}) => {
+const Form = ({onSubmit, persons, setPersons, setNotificationMsg}) => {
+    const [newName, setNewName] = useState('')
+    const [newNumber, setNewNumber] = useState('')
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        let name = newName.trim();
+        let phone = newNumber.trim();
+        console.log("name", name);
+        console.log("phone", phone);
+        if (name.length > 0 && phone.length > 0) {
+            //prevent duplicates and alert if found
+            if (persons.find(e => e.name.toLowerCase() === name.toLowerCase())) {
+                alert(`${name} is already added to the phonebook`)
+            } else {
+                let new_entry = {id: nanoid(), name: name, phone: newNumber}
+                personService.create(new_entry).then(() => {
+                    setPersons(persons.concat(new_entry))
+                    setNewName('')
+                    setNewNumber('')
+                    setNotificationMsg(`${new_entry.name} Added to Phonebook`)
+                    setTimeout(() => {
+                        setNotificationMsg(null)
+                    }, 2500)
+                })
+            }
+        }
+    }
+
     return (
-        <form onSubmit={onSubmit}>
-            Name: <Input fullWidth={true} placeholder={'Name'} onChange={(e) => setNewName(e.target.value)} value={newName}/>
+        <form onSubmit={handleSubmit}>
+            <Input fullWidth={true}
+                   placeholder={'Name'}
+                   onChange={(e) => setNewName(e.target.value)}
+                   value={newName}/>
             <br/>
-            Number: <Input placeholder={'Number'}
-                           type={'number'}
-                           inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
-                           helperText={'Enter Only Numbers'}
-                           fullWidth={true}
-                           onChange={(e) => setNewNumber(e.target.value)}
-                           value={newNumber}/>
+            <Input placeholder={'Number'}
+                   type={'number'}
+                   inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+                   helperText={'Enter Only Numbers'}
+                   fullWidth={true}
+                   onChange={(e) => setNewNumber(e.target.value)}
+                   value={newNumber}/>
             <br/>
             <Button type="submit" variant={'outlined'} fullWidth={true}>Add</Button>
         </form>
@@ -107,8 +139,7 @@ const Notification = ({message}) => {
 
 const App = () => {
     const [persons, setPersons] = useState([])
-    const [newName, setNewName] = useState('')
-    const [newNumber, setNewNumber] = useState('')
+
     const [search, setSearch] = useState('')
     const [notificationMsg, setNotificationMsg] = useState(null)
 
@@ -129,28 +160,6 @@ const App = () => {
         },
     });
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        let name = newName.trim();
-        let phone = newNumber.trim();
-        if (name.length > 0 && phone.length > 0) {
-            //prevent duplicates and alert if found
-            if (persons.find(e => e.name.toLowerCase() === name.toLowerCase())) {
-                alert(`${name} is already added to the phonebook`)
-            } else {
-                let new_entry = {id: nanoid(), name: name, phone: newNumber}
-                personService.create(new_entry).then(() => {
-                    setPersons(persons.concat(new_entry))
-                    setNewName('')
-                    setNewNumber('')
-                    setNotificationMsg(`${new_entry.name} Added to Phonebook`)
-                    setTimeout(() => {
-                        setNotificationMsg(null)
-                    }, 2500)
-                })
-            }
-        }
-    }
 
     const handleDelete = (e) => {
         e.preventDefault()
@@ -211,9 +220,10 @@ const App = () => {
                                         <h2>Phonebook</h2>
                                         <Notification message={notificationMsg}/>
                                         <br/>
-                                        <Form onSubmit={handleSubmit}
-                                              newName={newName} setNewName={setNewName}
-                                              newNumber={newNumber} setNewNumber={setNewNumber}
+                                        <Form
+                                            persons={persons}
+                                            setPersons={setPersons}
+                                            setNotificationMsg={setNotificationMsg}
                                         />
                                         {
                                             //If there's data in the filter input field, render the matches, if any, else render the entire phonebook

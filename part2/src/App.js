@@ -80,7 +80,12 @@ const Form = ({onSubmit, newName, setNewName, newNumber, setNewNumber}) => {
         <form onSubmit={onSubmit}>
             Name: <Input placeholder={'Name'} onChange={(e) => setNewName(e.target.value)} value={newName}/>
             <br/>
-            Number: <Input placeholder={'Number'} onChange={(e) => setNewNumber(e.target.value)} value={newNumber}/>
+            Number: <Input placeholder={'Number'}
+                           type={'number'}
+                           inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+                           helperText={'Enter Only Numbers'}
+                           onChange={(e) => setNewNumber(e.target.value)}
+                           value={newNumber}/>
             <br/>
             <Button type="submit" variant={'outlined'}>Add</Button>
         </form>
@@ -126,7 +131,8 @@ const App = () => {
     const handleSubmit = (e) => {
         e.preventDefault()
         let name = newName.trim();
-        if (name.length > 0) {
+        let phone = newNumber.trim();
+        if (name.length > 0 && phone.length > 0) {
             //prevent duplicates and alert if found
             if (persons.find(e => e.name.toLowerCase() === name.toLowerCase())) {
                 alert(`${name} is already added to the phonebook`)

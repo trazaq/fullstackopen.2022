@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from 'react'
+import {useState, useEffect, useRef, memo} from 'react'
 import {nanoid} from "nanoid";
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
@@ -78,16 +78,17 @@ const Persons = ({persons, onClick}) => {
 const Form = ({onSubmit, newName, setNewName, newNumber, setNewNumber}) => {
     return (
         <form onSubmit={onSubmit}>
-            Name: <Input placeholder={'Name'} onChange={(e) => setNewName(e.target.value)} value={newName}/>
+            Name: <Input fullWidth={true} placeholder={'Name'} onChange={(e) => setNewName(e.target.value)} value={newName}/>
             <br/>
             Number: <Input placeholder={'Number'}
                            type={'number'}
                            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
                            helperText={'Enter Only Numbers'}
+                           fullWidth={true}
                            onChange={(e) => setNewNumber(e.target.value)}
                            value={newNumber}/>
             <br/>
-            <Button type="submit" variant={'outlined'}>Add</Button>
+            <Button type="submit" variant={'outlined'} fullWidth={true}>Add</Button>
         </form>
     )
 }

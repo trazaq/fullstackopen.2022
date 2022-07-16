@@ -25,6 +25,9 @@ import Box from "@mui/material/Box";
 import Input from './Input';
 import PersonList from './PersonList';
 //import Form from './Form';
+import store from './store';
+import {notify, un_notify} from "./store";
+import { useSelector, useDispatch } from 'react-redux';
 
 /*const Persons = ({persons, onClick}) => {
     const StyledTableCell = styled(TableCell)(({theme}) => ({
@@ -79,13 +82,19 @@ import PersonList from './PersonList';
 const Form = ({onSubmit, persons, setPersons, setNotificationMsg}) => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
+    const dispatch = useDispatch();
+
 
     const handleSubmit = (e) => {
+        try {
+            dispatch(notify("NOTIFY"));
+            dispatch(un_notify())
+        } catch (e) {
+            console.log(e)
+        }
         e.preventDefault()
         let name = newName.trim();
         let phone = newNumber.trim();
-        console.log("name", name);
-        console.log("phone", phone);
         if (name.length > 0 && phone.length > 0) {
             //prevent duplicates and alert if found
             if (persons.find(e => e.name.toLowerCase() === name.toLowerCase())) {
@@ -167,7 +176,7 @@ const App = () => {
         personService.remove(id).then(response => {
             if (response.status === 200) {
                 setPersons(persons.filter(p => p.id !== id))
-                setNotificationMsg("Deleted!")
+               // store.dispatch({type: "NOTIFY", data: "DELETED!"});
                 setTimeout(() => {
                     setNotificationMsg(null)
                 }, 2000)
